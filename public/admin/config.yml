@@ -1,0 +1,525 @@
+# site_url: https://howto.acdh.oeaw.ac.at/
+site_url: https://howto-ditah.vercel.app/
+logo_url: /assets/images/acdh-ch-logo-with-text.svg
+load_config_file: true
+local_backend: true
+publish_mode: editorial_workflow
+backend:
+  name: github
+  # repo: acdh-oeaw/howto
+  repo: stefanprobst/howto
+  branch: main
+  # base_url: https://api.netlify.com
+  base_url: https://howto-ditah.vercel.app/
+  # auth_endpoint: auth
+  auth_endpoint: api/auth/github
+  open_authoring: true
+  # for private repos, use auth_scope repo instead of public_repo
+  # users must have read access to be able to fork
+  # auth_scope: repo
+  # force fork for users with write access to repo
+  always_fork: true
+  # cms_label_prefix: netlify-cms/
+  squash_merges: true
+  commit_messages:
+    create: "content(create): {{collection}} '{{slug}}'"
+    update: "content(update): {{collection}} '{{slug}}'"
+    delete: "content(delete): {{collection}} '{{slug}}'"
+    uploadMedia: "content(upload): '{{path}}'"
+    deleteMedia: "content(delete): '{{path}}'"
+# keep unicode characters - this avoids unclear rules for removing diacritics/umlauts,
+# which differ between languages. i.e. german should ü => ue, but french should ü => u.
+# slug:
+# encoding: ascii
+# clean_accents: true
+media_folder: public/assets/images/cms
+public_folder: /assets/images/cms
+editor:
+  preview: false
+collections:
+  - name: posts
+    label: Resources
+    label_singular: Resource
+    description: Resources
+    # identifier_field: title
+    format: frontmatter
+    extension: mdx
+    create: true
+    delete: false
+    folder: content/resources
+    # path: '{{year}}/{{slug}}/index'
+    media_folder: '{{media_folder}}/resources/{{slug}}'
+    public_folder: '{{public_folder}}/resources/{{slug}}'
+    slug: '{{slug}}'
+    preview_path: 'resources/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - date
+      - title
+      - commit_author
+    # view_filters:
+    view_groups:
+      - label: Year
+        field: date
+        pattern: \d{4}
+    fields:
+      - name: title
+        label: Title
+        hint: ''
+      - name: shortTitle
+        label: Short title
+        hint: ''
+        required: false
+      - name: lang
+        label: Language
+        hint: ''
+        widget: select
+        options:
+          - label: English
+            value: en
+          - label: Deutsch
+            value: de
+        default: en
+      - name: date
+        label: Publication date
+        hint: ''
+        widget: datetime
+        date_format: DD/MM/YYYY
+        time_format: false
+        picker_utc: true
+        # Avoid Date.now() default, which immediately marks the record as dirty.
+        default: ''
+      - name: version
+        label: Version
+        hint: ''
+        default: 1.0.0
+      - name: authors
+        label: Authors
+        hint: ''
+        widget: relation
+        collection: persons
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - firstName
+          - lastName
+        display_fields:
+          - '{{firstName}} {{lastName}}'
+      - name: editors
+        label: Editors
+        hint: ''
+        required: false
+        widget: relation
+        collection: persons
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - firstName
+          - lastName
+        display_fields:
+          - '{{firstName}} {{lastName}}'
+      - name: contributors
+        label: Contributors
+        hint: ''
+        required: false
+        widget: relation
+        collection: persons
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - firstName
+          - lastName
+        display_fields:
+          - '{{firstName}} {{lastName}}'
+      - name: tags
+        label: Tags
+        hint: ''
+        widget: relation
+        collection: tags
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - name
+        display_fields:
+          - name
+      - name: categories
+        label: Categories
+        hint: ''
+        widget: relation
+        collection: categories
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - name
+        display_fields:
+          - name
+        default: dariah
+      - name: featuredImage
+        label: Featured image
+        hint: ''
+        required: false
+        widget: image
+      - name: abstract
+        label: Abstract
+        hint: ''
+        widget: text
+      - name: body
+        label: Content
+        widget: markdown
+        # modes: ['raw', 'rich_text']
+      - name: domain
+        label: Domain
+        hint: ''
+        required: false
+        widget: select
+        options:
+          - label: Social Sciences and Humanities
+            value: Social Sciences and Humanities
+        default: Social Sciences and Humanities
+      - name: targetGroup
+        label: Target group
+        hint: ''
+        required: false
+        widget: select
+        options:
+          - label: Data managers
+            value: Data managers
+          - label: Domain researchers
+            value: Domain researchers
+          - label: Data service engineers
+            value: Data service engineers
+          - label: Data scientists/analysts
+            value: Data scientists/analysts
+        default: Domain researchers
+      - name: type
+        label: Resource type
+        hint: ''
+        # widget: select
+        # options:
+        #   - label: Audio
+        #     value: audio
+        #   - label: Event
+        #     value: event
+        #   - label: Slides
+        #     value: slides
+        #   - label: Training module
+        #     value: training-module
+        #   - label: Video
+        #     value: video
+        #   - label: Webinar recording
+        #     value: webinar-recording
+        #   - label: Website
+        #     value: website
+        #   - label: Pathfinder
+        #     value: pathfinder
+        widget: relation
+        collection: resource-types
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - name
+        display_fields:
+          - name
+        default: training-module
+      - name: licence
+        label: Licence
+        hint: ''
+        # widget: select
+        # options:
+        #   - label: CCBY 4.0
+        #     value: ccby-4.0
+        widget: relation
+        collection: licences
+        multiple: true
+        value_field: '{{slug}}'
+        search_fields:
+          - name
+        display_fields:
+          - name
+        default: ccby-4.0
+      - name: remote
+        label: Remote host
+        hint: ''
+        required: false
+        widget: object
+        fields:
+          - name: publisher
+            label: Publisher
+            hint: ''
+            required: false
+          - name: date
+            label: Publication date
+            hint: ''
+            required: false
+            widget: datetime
+            date_format: DD/MM/YYYY
+            time_format: false
+            picker_utc: true
+            # Avoid Date.now() default, which immediately marks the record as dirty.
+            default: ''
+          - name: url
+            label: URL
+            hint: ''
+            required: false
+            pattern: ['^[a-zA-Z][a-zA-Z\d+\-.]*:', 'Must be a valid URL']
+      - name: toc
+        label: Show Table of Contents
+        hint: ''
+        required: false
+        widget: boolean
+        default: false
+  - name: collections
+    label: Collections
+    label_singular: Collection
+    description: Collections of resources
+    # identifier_field: title
+    format: frontmatter
+    create: true
+    delete: false
+    folder: content/collections
+    # path: '{{year}}/{{slug}}/index'
+    media_folder: '{{media_folder}}/collections/{{slug}}'
+    public_folder: '{{public_folder}}/collections/{{slug}}'
+    slug: '{{slug}}'
+    preview_path: 'collections/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - date
+      - title
+      - commit_author
+    # view_filters:
+    view_groups:
+      - label: Year
+        field: date
+        pattern: \d{4}
+    fields:
+      - name: title
+        label: Title
+        hint: Title of your resource
+      - name: shortTitle
+        label: Short title
+        required: false
+        hint: Used in overview page
+      - name: date
+        label: Date
+        hint: Date that the resource was published on DARIAH-Campus
+        widget: datetime
+        date_format: DD/MM/YYYY
+        time_format: false
+        picker_utc: true
+        # Avoid Date.now() default, which immediately marks the record as dirty.
+        default: ''
+      - name: posts
+        label: Resources
+        label_singular: Resource
+        hint: Resources contained in this collection
+        widget: list
+        collapsed: false
+        minimize_collapsed: false
+        summary: '{{fields.post}}'
+        min: 1
+        # do we want a description field here? or use post.abstract?
+        field:
+          name: post
+          label: Resource
+          widget: relation
+          collection: posts
+          value_field: '{{slug}}'
+          search_fields:
+            - title
+          display_fields:
+            - title
+        # default: []
+      - name: body
+        label: Content
+        hint: Description of the collection
+        widget: markdown
+        # modes: ['raw', 'rich_text']
+  - name: persons
+    label: Persons
+    label_singular: Person
+    description: Authors, contributors, and editors
+    identifier_field: lastName
+    format: yml
+    create: true
+    delete: false
+    folder: content/persons
+    # path: '{{slug}}/index'
+    media_folder: '{{media_folder}}/persons'
+    public_folder: '{{public_folder}}/persons'
+    slug: '{{lastName}}-{{firstName}}'
+    preview_path: 'persons/{{slug}}'
+    summary: '{{firstName}} {{lastName}}'
+    sortable_fields:
+      - commit_date
+      - lastName
+    # view_filters:
+    # view_groups:
+    fields:
+      - name: firstName
+        label: First name
+        hint: ''
+      - name: lastName
+        label: Last name
+        hint: ''
+      - name: title
+        label: Title
+        hint: ''
+        required: false
+      - name: description
+        label: Description
+        hint: ''
+        required: false
+        widget: text
+      - name: avatar
+        label: Image
+        hint: ''
+        required: false
+        widget: image
+      - name: email
+        label: Email
+        hint: ''
+        required: false
+      - name: twitter
+        label: Twitter
+        hint: ''
+        required: false
+      - name: website
+        label: Website
+        hint: ''
+        required: false
+      - name: orcid
+        label: ORCID
+        hint: ''
+        required: false
+      - name: linkedin
+        label: LinkedIn
+        hint: ''
+        required: false
+  - name: tags
+    label: Tags
+    label_singular: Tag
+    description: Tags
+    identifier_field: name
+    format: yml
+    create: true
+    delete: false
+    folder: content/tags
+    # path: '{{slug}}/index'
+    media_folder: '{{media_folder}}/tags'
+    public_folder: '{{public_folder}}/tags'
+    slug: '{{slug}}'
+    preview_path: 'tags/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - name
+    # view_filters:
+    # view_groups:
+    fields:
+      - name: name
+        label: Name
+        hint: ''
+      - name: description
+        label: Description
+        hint: ''
+        widget: text
+  - name: categories
+    label: Categories
+    label_singular: Category
+    description: Sources
+    identifier_field: name
+    format: yml
+    hide: true
+    create: true
+    delete: false
+    folder: content/categories
+    # path: '{{slug}}/index'
+    media_folder: '{{media_folder}}/categories'
+    public_folder: '{{public_folder}}/categories'
+    slug: '{{slug}}'
+    preview_path: 'categories/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - name
+    # view_filters:
+    # view_groups:
+    fields:
+      - name: name
+        label: Name
+        hint: ''
+      - name: description
+        label: Description
+        hint: ''
+        widget: text
+      - name: host
+        label: Host
+        hint: ''
+        required: false
+      - name: image
+        label: Image
+        hint: ''
+        required: false
+        widget: image
+  - name: resource-types
+    label: Resource types
+    label_singular: Resource type
+    description: Resource types
+    identifier_field: name
+    format: yml
+    hide: true
+    create: true
+    delete: false
+    folder: content/resource-types
+    # path: '{{slug}}/index'
+    media_folder: '{{media_folder}}/resource-types'
+    public_folder: '{{public_folder}}/resource-types'
+    slug: '{{slug}}'
+    preview_path: 'resource-types/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - name
+    # view_filters:
+    # view_groups:
+    fields:
+      - name: name
+        label: Name
+        hint: ''
+      - name: description
+        label: Description
+        hint: ''
+        required: false
+        widget: text
+  - name: licences
+    label: Licences
+    label_singular: Licence
+    description: Licences
+    identifier_field: name
+    format: yml
+    hide: true
+    create: true
+    delete: false
+    folder: content/licences
+    # path: '{{slug}}/index'
+    media_folder: '{{media_folder}}/licences'
+    public_folder: '{{public_folder}}/licences'
+    slug: '{{slug}}'
+    preview_path: 'licences/{{slug}}'
+    # summary:
+    sortable_fields:
+      - commit_date
+      - name
+    # view_filters:
+    # view_groups:
+    fields:
+      - name: name
+        label: Name
+        hint: ''
+      - name: url
+        label: URL
+        hint: ''
+        pattern: ['^[a-zA-Z][a-zA-Z\d+\-.]*:', 'Must be a valid URL']

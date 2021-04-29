@@ -1,0 +1,22 @@
+{
+  "name": "dc-cms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier . --write",
+    "proxy": "netlify-cms-proxy-server",
+    "serve": "serve public",
+    "start": "yarn run proxy & yarn run serve"
+  },
+  "devDependencies": {
+    "netlify-cms-proxy-server": "^1.3.12",
+    "prettier": "^2.2.1",
+    "serve": "^11.3.2"
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "semi": false,
+    "singleQuote": true
+  }
+}

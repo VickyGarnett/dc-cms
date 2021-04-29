@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>CMS</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/netlify-cms@^2"></script>
+    <script type="module">
+      import { nanoid } from 'https://unpkg.com/nanoid/nanoid.js'
+
+      /**
+       * Populates hidden `uuid` field.
+       */
+      CMS.registerEventListener({
+        name: 'preSave',
+        handler({ entry }) {
+          const data = entry.get('data')
+          if (entry.get('collection') !== 'posts') {
+            return data
+          }
+          if (!data.get('uuid')) {
+            return data.set('uuid', nanoid())
+          }
+          return data
+        },
+      })
+    </script>
+  </body>
+</html>
